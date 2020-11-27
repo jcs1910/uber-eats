@@ -1,9 +1,10 @@
 import { Resolver, Query } from '@nestjs/graphql';
+import { Restaurant } from './entities/restaurant.entitiy';
 
-@Resolver()
+@Resolver(of => Restaurant)
 export class RestaurantResolver {
-  @Query(returns => Boolean) // returns 아무 의미가 없음 / (() => Boolean) 또는 ((_ => Boolean) are both possible // arrow function을 만들기 위한 argument
-  isPizzaGood(): Boolean {
+  @Query(returns => Restaurant)
+  myRestaurant() {
     return true;
   }
 }
