@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { User } from './users/entities/user.entity';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
+    UsersModule,
   ],
   controllers: [],
   providers: [],
