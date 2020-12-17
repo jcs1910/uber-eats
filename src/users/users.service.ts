@@ -7,6 +7,7 @@ import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from 'src/jwt/jwt.service';
+import { EditProfileInput } from './dtos/edit-profile';
 
 @Injectable()
 export class UserService {
@@ -24,7 +25,6 @@ export class UserService {
     try {
       const exists = await this.users.findOne({ email });
       if (exists) {
-        // make Error
         return {
           ok: false,
           error: 'There is a user using this email already',
@@ -34,7 +34,6 @@ export class UserService {
       await this.users.save(user);
       return { ok: true };
     } catch (e) {
-      //make error
       return {
         ok: false,
         error: 'Could not create account',
@@ -77,5 +76,17 @@ export class UserService {
 
   async findById(id: number): Promise<User> {
     return this.users.findOne({ id });
+  }
+
+  async editProfile(userId: number, { email, password }: EditProfileInput) {
+    const user = await this.users.findOne(userId);
+
+    if (email) {
+      user.email = email;
+    }
+    if (password) {
+      user.password = password;
+    }
+    return this.users.save(user);
   }
 }
