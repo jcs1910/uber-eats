@@ -9,6 +9,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsEmail, IsEnum } from 'class-validator';
+import { boolean } from 'joi';
 
 enum UserRole {
   Client,
@@ -37,7 +38,7 @@ export class User extends CoreEntity {
   role: UserRole;
 
   @Column({ default: false })
-  @Field(type => Boolean)
+  @Field(type => boolean)
   verified: boolean;
 
   @BeforeInsert()
