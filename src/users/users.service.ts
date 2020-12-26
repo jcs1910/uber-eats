@@ -7,11 +7,14 @@ import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
 import { JwtService } from 'src/jwt/jwt.service';
 import { EditProfileInput } from './dtos/edit-profile';
+import { Verification } from './entities/verification.entitiy';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(Verification)
+    private readonly verifications: Repository<Verification>,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -31,6 +34,11 @@ export class UserService {
       }
       const user = await this.users.create({ email, password, role });
       await this.users.save(user);
+
+      // send an verification code
+      const code = await this.verifications.create({ user });
+      await this.verifications.save(code);
+
       return { ok: true };
     } catch (e) {
       return {
@@ -82,6 +90,10 @@ export class UserService {
 
     if (email) {
       user.email = email;
+      user.verified = false;
+      // send an verification code
+      const code = await this.verifications.create({ user });
+      await this.verifications.save(code);
     }
     if (password) {
       user.password = password;
