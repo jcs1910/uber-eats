@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { User } from './entities/user.entity';
 import { UserService } from './users.service';
 import {
@@ -17,41 +17,16 @@ import { VerifyEmailOutput, VerifyEmailInput } from './dtos/verify-email.dto';
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
-  @Query(returns => Boolean)
-  hi() {
-    return true;
-  }
-
   @Mutation(returns => CreateAccountOutput)
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
-    try {
-      const { ok, error } = await this.userService.createAccount(
-        createAccountInput,
-      );
-      return {
-        ok,
-        error,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.userService.createAccount(createAccountInput);
   }
 
   @Mutation(returns => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      return this.userService.login(loginInput);
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.userService.login(loginInput);
   }
 
   @Query(returns => User)
@@ -65,22 +40,7 @@ export class UserResolver {
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
-    try {
-      const user = await this.userService.findById(userProfileInput.userId);
-      console.log('user ', user);
-      if (!user) {
-        throw Error();
-      }
-      return {
-        ok: true,
-        user,
-      };
-    } catch (e) {
-      return {
-        ok: false,
-        error: 'User Not Found',
-      };
-    }
+    return this.userService.findById(userProfileInput.userId);
   }
 
   @UseGuards(AuthGuard)
@@ -103,19 +63,13 @@ export class UserResolver {
   }
 
   @Mutation(returns => VerifyEmailOutput)
-  async verifyEmail(
+  verifyEmail(
     @Args('input') { code }: VerifyEmailInput,
   ): Promise<VerifyEmailOutput> {
-    try {
-      await this.userService.verifyEmail(code);
-      return {
-        ok: true,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.userService.verifyEmail(code);
+    /*
+    const { ok, error } = await this.userService.verifyEmail(code);
+    return { ok, error };
+    */
   }
 }
